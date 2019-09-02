@@ -1,4 +1,4 @@
-let widthScreen = document.documentElement.clientWidth -45;
+// let widthScreen = document.documentElement.clientWidth -45;
 let images = new Object();
 let imagesCount= 0;
 let regExpJson= /\.(json)$/;
@@ -94,20 +94,15 @@ function addImgs(){
 
   });  
   $('.loader-images__input').val('');
-  sizeImages();
+  sizeImages($('.gallery').width()-45);
 }
 
-function sizeImages(){
+function sizeImages(widthScreen ){
 
   if( document.documentElement.clientWidth >  320  ){
     row = {};
     let needHeight;
     needHeight =200;
-    widthScreen = document.documentElement.clientWidth -45;
-
-    if( document.documentElement.clientWidth > 860) {   
-        widthScreen = 860-45;
-    }
 
     Object.entries(images).forEach(([key, value]) => {
       row[key] = value;
@@ -168,5 +163,17 @@ function clearGallery() {
 }
 
 window.onresize = function(e){
-  sizeImages();
+    $('.gallery').css({"width": document.documentElement.clientWidth -25 });
+    sizeImages($('.gallery').width()-45);  
 }
+
+$(document).ready(function () {
+  let observer = new MutationObserver(function(mutations) {
+    sizeImages($('.gallery').width()-45);
+  });
+  
+  let child = document.querySelector('.gallery');
+  observer.observe(child, { attributes: true });
+ });
+  
+

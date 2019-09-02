@@ -36,5 +36,12 @@ body {
 .gallery {
   max-width: 860px;
   min-width: 320px;
+  min-height: 600px;
+  max-height: 600px;
+  /* border: 2px solid; */
+  box-shadow: 0 0 5px rgba(0,0,0,0.5); /* Параметры тени */
+
+  resize: both;
+  overflow: auto; 
 }
 /*# sourceMappingURL=style.css.map */
