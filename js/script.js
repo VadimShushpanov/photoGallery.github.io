@@ -158,7 +158,9 @@ function removeUploadedFile() {
   $('.loader-images__file-name').text('');
 }
 
-function clearGallery() {
+function clearGallery(clearImages) {
+  if(clearImages === 'Y')
+    images={};
   $('.gallery img').remove();
 }
 
@@ -175,5 +177,3 @@ $(document).ready(function () {
   let child = document.querySelector('.gallery');
   observer.observe(child, { attributes: true });
  });
-  
-
