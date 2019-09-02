@@ -106,7 +106,7 @@ function sizeImages(){
     widthScreen = document.documentElement.clientWidth -45;
 
     if( document.documentElement.clientWidth > 860) {   
-        widthScreen =860 -15;
+        widthScreen = 860-45;
     }
 
     Object.entries(images).forEach(([key, value]) => {
