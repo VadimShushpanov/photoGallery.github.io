@@ -1,14 +1,9 @@
-// let widthScreen = document.documentElement.clientWidth -45;
 let images = new Object();
 let imagesCount= 0;
 let regExpJson= /\.(json)$/;
 let regExpImg = /\.(gif|jpg|jpeg|tiff|png)$/;
 let row = new Object();
 let widthRow = 0;
-
-
-
-
 
 let getJSON = function(url, callback) {
   let xhr = new XMLHttpRequest();
@@ -29,10 +24,9 @@ function getIndentForDevice () {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
     return 20;
   } else {
-    return 30;
+    return 45;
   }
 }
-
 
 function uploadImages() {
   let url  =  $('.loader-images__input').val();
@@ -87,7 +81,6 @@ function uploadImages() {
                     clearGallery();
                     addImgs();
                   }
-                  console.log(images);
               });
               reader.readAsDataURL(inputField.files[0]);
           }
@@ -98,7 +91,6 @@ function uploadImages() {
           if (inputField.files && inputField.files[0]) {
               file = new FileReader();
               file.onload = function() {
-                console.log(file);
                 result =  JSON.parse(file.result);
                   Object.entries(result).forEach(
                     ([key, value]) => {
