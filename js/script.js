@@ -6,6 +6,10 @@ let regExpImg = /\.(gif|jpg|jpeg|tiff|png)$/;
 let row = new Object();
 let widthRow = 0;
 
+
+
+
+
 let getJSON = function(url, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -20,6 +24,15 @@ let getJSON = function(url, callback) {
   };
   xhr.send();
 };
+
+function getIndentForDevice () {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    return 20;
+  } else {
+    return 30;
+  }
+}
+
 
 function uploadImages() {
   let url  =  $('.loader-images__input').val();
@@ -57,26 +70,53 @@ function uploadImages() {
         });
       }
     } else if ($('.loader-images__input-file').val().split("\\").pop() != ''){
-      let inputField = document.getElementById("input");
-      let file = null;
-      if (inputField.files && inputField.files[0]) {
-          file = new FileReader();
-          file.onload = function() {
-            result =  JSON.parse(file.result);
-              Object.entries(result).forEach(
-                ([key, value]) => {
-                  Object.entries(value).forEach(([key, value]) => {
-                    value.width  = value.width * 200/  value.height;
-                    value.height = 200;
-                    images[$('.gallery img').length + Number(key)]= Object.assign({}, value);
-                  });                 
-                }
-            );
-            clearGallery();
-            addImgs();
-          };
-          file.readAsText(inputField.files[0]);
-      }
+     let uploadFile =  $('.loader-images__input-file').val();
+     let inputField = document.getElementById("input");
+        if ( regExpImg.test(uploadFile)) {
+          if (inputField.files && inputField.files[0]) {
+              var reader = new FileReader();
+              $(reader).load(function(e) { 
+                  let url =e.target.result;
+                  let image = new Image();
+                  image.classList.add('gallery__img-'+ $('.gallery img').length);
+                  image.src = e.target.result;
+                  image.onload = function() {
+                    this.width  = this.width * 200/ this.height;
+                    this.height= 200;
+                    images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
+                    clearGallery();
+                    addImgs();
+                  }
+                  console.log(images);
+              });
+              reader.readAsDataURL(inputField.files[0]);
+          }
+        }
+        else if ( regExpJson.test($('.loader-images__input-file').val())) {
+
+          let file = null;
+          if (inputField.files && inputField.files[0]) {
+              file = new FileReader();
+              file.onload = function() {
+                console.log(file);
+                result =  JSON.parse(file.result);
+                  Object.entries(result).forEach(
+                    ([key, value]) => {
+                      Object.entries(value).forEach(([key, value]) => {
+                        value.width  = value.width * 200/  value.height;
+                        value.height = 200;
+                        images[$('.gallery img').length + Number(key)]= Object.assign({}, value);
+                      });                 
+                    }
+                );
+                clearGallery();
+                addImgs();
+              };
+              file.readAsText(inputField.files[0]);
+          }
+        } else {
+          alert("Неправильный формат. Выберете картинку или json файл");
+        }
     } else {
       alert("Выберете файл или введите url до файла");
   }
@@ -94,7 +134,7 @@ function addImgs(){
 
   });  
   $('.loader-images__input').val('');
-  sizeImages($('.gallery').width()-45);
+  sizeImages($('.gallery').width() - getIndentForDevice ());
 }
 
 function sizeImages(widthScreen ){
@@ -166,14 +206,16 @@ function clearGallery(clearImages) {
 
 window.onresize = function(e){
     $('.gallery').css({"width": document.documentElement.clientWidth -25 });
-    sizeImages($('.gallery').width()-45);  
+    sizeImages($('.gallery').width() - getIndentForDevice ());  
 }
 
 $(document).ready(function () {
   let observer = new MutationObserver(function(mutations) {
-    sizeImages($('.gallery').width()-45);
+    sizeImages($('.gallery').width() - getIndentForDevice ());
   });
   
   let child = document.querySelector('.gallery');
   observer.observe(child, { attributes: true });
  });
+
+

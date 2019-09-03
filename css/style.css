@@ -40,6 +40,7 @@ body {
   max-height: 60vh;
   box-shadow: 0 0 5px rgba(0,0,0,0.5); /* Параметры тени */
   resize: both;
+  user-select: none;
   overflow: auto; 
 }
 /*# sourceMappingURL=style.css.map */
