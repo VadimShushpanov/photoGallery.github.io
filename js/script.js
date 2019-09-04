@@ -4,6 +4,16 @@ let regExpJson= /\.(json)$/;
 let regExpImg = /\.(gif|jpg|jpeg|tiff|png)$/;
 let row = new Object();
 let widthRow = 0;
+let minWidth = 320;
+let marginRight = 5;
+
+function getIndentForDevice () {
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    return 20;
+  } else {
+    return 45;
+  }
+}
 
 let getJSON = function(url, callback) {
   let xhr = new XMLHttpRequest();
@@ -20,98 +30,124 @@ let getJSON = function(url, callback) {
   xhr.send();
 };
 
-function getIndentForDevice () {
-  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-    return 20;
-  } else {
-    return 45;
+function isImg(url)  {
+ return regExpImg.test(url);
+}
+
+function isJson(url) {
+  return regExpJson.test(url);
+}
+
+function loadImgLink (url) {
+  let image = new Image();
+  image.classList.add('gallery__img-'+ $('.gallery img').length);
+  image.src = url;
+  image.onload = function() {
+    this.width  = this.width * 200/ this.height;
+    this.height= 200;
+    images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
+    clearGallery();
+    addImgs();
   }
+  image.onerror = function() {
+    alert("Ошибка во время загрузки изображения");
+  };
+}
+
+function loadJsonLink (url) {
+  getJSON( url ,
+    function(err, result) {
+      if (err !== null) {
+        alert('Something went wrong: ' + err);
+      } else {
+          result;
+          jsonParse(result);
+          clearGallery();
+          addImgs();
+        }
+    });
+}
+
+function buttonLoadImg (inputField) {
+  if (inputField.files && inputField.files[0]) {
+    var reader = new FileReader();
+    $(reader).load(function(e) { 
+        let url =e.target.result;
+        let image = new Image();
+        image.classList.add('gallery__img-'+ $('.gallery img').length);
+        image.src = e.target.result;
+        image.onload = function() {
+          this.width  = this.width * 200/ this.height;
+          this.height= 200;
+          images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
+          clearGallery();
+          addImgs();
+        }
+    });
+    reader.readAsDataURL(inputField.files[0]);
+  }
+}
+function buttonLoadJson(inputField) {
+  let file = null;
+  if (inputField.files && inputField.files[0]) {
+      file = new FileReader();
+      file.onload = function() {
+        result =  JSON.parse(file.result);
+        jsonParse(result);
+        clearGallery();
+        addImgs();
+      };
+      file.onerror = function() {
+        alert("Ошибка во время загрузки json файла ");
+      };
+      file.readAsText(inputField.files[0]);
+  }
+}
+
+function jsonParse(result){
+  Object.entries(result).forEach(
+    ([key, value]) => {
+      Object.entries(value).forEach(([key, value]) => {
+        value.width  = value.width * 200/  value.height;
+        value.height = 200;
+        images[$('.gallery img').length + Number(key)]= Object.assign({}, value);
+      });                 
+    }
+  );
 }
 
 function uploadImages() {
   let url  =  $('.loader-images__input').val();
-  if (url.trim() != ''){
-    if ( regExpImg.test(url)) {
-      let image = new Image();
-      image.classList.add('gallery__img-'+ $('.gallery img').length);
-      image.src = url;
-      image.onload = function() {
-        this.width  = this.width * 200/ this.height;
-        this.height= 200;
-        images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
-        clearGallery();
-        addImgs();
-      }
-    } else if (regExpJson.test(url)) {
-      getJSON( url ,
-        function(err, data) {
-          if (err !== null) {
-            alert('Something went wrong: ' + err);
-          } else {
-              data;
-            Object.entries(data).forEach(
-              ([key, value]) => {
-                Object.entries(value).forEach(([key, img]) => {
-                  img.width  = img.width * 200/  img.height;
-                  img.height = 200;
-                  images[$('.gallery img').length + Number(key)]= Object.assign({}, img);
-                });      
-              }
-            );
-            clearGallery();
-            addImgs();
-          }
-        });
-      }
-    } else if ($('.loader-images__input-file').val().split("\\").pop() != ''){
-     let uploadFile =  $('.loader-images__input-file').val();
-     let inputField = document.getElementById("input");
-        if ( regExpImg.test(uploadFile)) {
-          if (inputField.files && inputField.files[0]) {
-              var reader = new FileReader();
-              $(reader).load(function(e) { 
-                  let url =e.target.result;
-                  let image = new Image();
-                  image.classList.add('gallery__img-'+ $('.gallery img').length);
-                  image.src = e.target.result;
-                  image.onload = function() {
-                    this.width  = this.width * 200/ this.height;
-                    this.height= 200;
-                    images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
-                    clearGallery();
-                    addImgs();
-                  }
-              });
-              reader.readAsDataURL(inputField.files[0]);
-          }
-        }
-        else if ( regExpJson.test($('.loader-images__input-file').val())) {
+  let uploadFile =  $('.loader-images__input-file').val();
+  let inputField =  document.getElementById("input");
 
-          let file = null;
-          if (inputField.files && inputField.files[0]) {
-              file = new FileReader();
-              file.onload = function() {
-                result =  JSON.parse(file.result);
-                  Object.entries(result).forEach(
-                    ([key, value]) => {
-                      Object.entries(value).forEach(([key, value]) => {
-                        value.width  = value.width * 200/  value.height;
-                        value.height = 200;
-                        images[$('.gallery img').length + Number(key)]= Object.assign({}, value);
-                      });                 
-                    }
-                );
-                clearGallery();
-                addImgs();
-              };
-              file.readAsText(inputField.files[0]);
-          }
-        } else {
-          alert("Неправильный формат. Выберете картинку или json файл");
-        }
-    } else {
-      alert("Выберете файл или введите url до файла");
+  if (url.trim() === '' && uploadFile === ''){
+    alert("Выберете файл или введите url до файла");
+    return;
   }
+
+  if (url.trim() != ''){
+    if ( isImg(url)) {
+      loadImgLink (url);
+    } else if (isJson(url)) {
+      loadJsonLink (url);
+    } 
+    else {
+      alert("Выберете файл или введите url до файла");
+    }
+  } 
+  
+  if (uploadFile != ''){
+      if (isImg(uploadFile)) {
+        buttonLoadImg (inputField)
+      }
+      else if (isJson(uploadFile)) {
+        buttonLoadJson(inputField)
+      }
+      else {
+        alert("Неверный формат файла");
+      }
+  }  
 }
 
 function addImgs(){
@@ -129,41 +165,44 @@ function addImgs(){
   sizeImages($('.gallery').width() - getIndentForDevice ());
 }
 
-function sizeImages(widthScreen ){
+function sizeImages(widthGallery ) {
 
-  if( document.documentElement.clientWidth >  320  ){
+  if( document.documentElement.clientWidth >  minWidth  ){
     row = {};
-    let needHeight;
-    needHeight =200;
+
+    let needHeight = 200;
 
     Object.entries(images).forEach(([key, value]) => {
       row[key] = value;
       widthRow += value.width;
-      if (widthRow > widthScreen && Object.keys(row).length !== 1 ) { 
-        let heightRow = needHeight  * widthScreen/ widthRow;
+      if (widthRow > widthGallery && Object.keys(row).length !== 1 ) { 
         let imgToRow = Object.keys(row);
-        imgToRow = imgToRow[imgToRow.length -1];       
+        widthRow += (imgToRow.length -1)*marginRight
+        imgToRow = imgToRow[imgToRow.length -1];     
+        let heightRow = needHeight  * widthGallery/ widthRow; 
         Object.entries(row).forEach(([key, img]) => { 
 
           let width =  img.width * heightRow/ img.height + "px" ;
 
           if (key != imgToRow  ){
-            $('.gallery__img-'+key).css("margin-right", 10/(Object.keys(row).length-1));      
+            $('.gallery__img-'+key).css("margin-right", marginRight);      
           } else {
             $('.gallery__img-'+key).css("margin-right","unset")
           }
             $('.gallery__img-'+key).css({"width":width, "height": heightRow })
-          });  
+        });  
 
-          row = {};
-          widthRow = 0;
+        row = {};
+        widthRow = 0;
       }
       if(key == imagesCount){
         if(Object.keys(row).length != 0){
           Object.entries(row).forEach(([key, img]) => {
-            let heightRow = needHeight  * widthScreen/ widthRow;
+            widthRow += imagesCount * marginRight;
+            $('.gallery__img-'+key).css("margin-right", marginRight);      
+            let heightRow = needHeight  * widthGallery/ widthRow;
             heightRow= img.height;
-            if (widthScreen < 600 )
+            if (widthGallery < 600 )
               heightRow= img.height/1.3;
             let width =  img.width * heightRow/ img.height + "px" ;
             $('.gallery__img-'+key).css({"width": width, "height":heightRow })
@@ -176,7 +215,24 @@ function sizeImages(widthScreen ){
   }
 }
 
-function getFileName() {
+
+
+window.onresize = function(e){
+    $('.gallery').css({"width": document.documentElement.clientWidth -25 });
+    sizeImages($('.gallery').width() - getIndentForDevice ());  
+}
+
+$(document).ready(function () {
+  let observer = new MutationObserver(function(mutations) {
+    sizeImages($('.gallery').width() - getIndentForDevice ());
+  });
+  
+  let child = document.querySelector('.gallery');
+  observer.observe(child, { attributes: true });
+ });
+
+
+ function getFileName() {
   $('.loader-images__file-name').text($('.loader-images__input-file').val().split("\\").pop());
 }
 
@@ -195,19 +251,3 @@ function clearGallery(clearImages) {
     images={};
   $('.gallery img').remove();
 }
-
-window.onresize = function(e){
-    $('.gallery').css({"width": document.documentElement.clientWidth -25 });
-    sizeImages($('.gallery').width() - getIndentForDevice ());  
-}
-
-$(document).ready(function () {
-  let observer = new MutationObserver(function(mutations) {
-    sizeImages($('.gallery').width() - getIndentForDevice ());
-  });
-  
-  let child = document.querySelector('.gallery');
-  observer.observe(child, { attributes: true });
- });
-
-
