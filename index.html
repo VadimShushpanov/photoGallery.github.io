@@ -8,10 +8,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="js/script.js"></script>
 </head>
-<body>
-  <div class="content">
-    <h2 class="content__title">Responsive Gallery</h2>
-    <div class="example-links">
+<body class="page">
+  <div class="gallery">
+    <h2 class="gallery__title">Responsive Gallery</h2>
+    <div class="gallery__links">
         <span>Ссылки, которыми можно воспользоваться:</span>
         <span>https://don16obqbay2c.cloudfront.net/frontend-test-task/gallery-images.json</span>
         <span>https://tion.ru/wp-content/uploads/2019/03/gipoallergennye-zhivotnye-01.jpg</span>
@@ -19,13 +19,13 @@
       </div>
       <div class='loader-images'>
           <input  class="loader-images__input" placeholder="Введите URL" onchange="removeUploadedFile()"/>
-          <input type="button" onclick="uploadImages()" value="Загрузить" />
-          <input type="button" onclick="chooseFile()" value="Выбрать файл" />
+          <input class="loader-images__btn-upload" type="button" onclick="uploadImages()" value="Загрузить" />
+          <input class="loader-images__btn-choose-file"  type="button" onclick="chooseFile()" value="Выбрать файл" />
           <label class="loader-images__file-name"></label>
-          <input type="button" onclick="clearGallery('Y')" value="Очистить галлерею" />
-          <input type="file" id="input" class="loader-images__input-file" onchange="getFileName()"/>
+          <input class="loader-images__btn-clear" type="button" onclick="clearGallery('Y')" value="Очистить галлерею" />
+          <input class="loader-images__input-file" type="file"   onchange="getFileName()"/>
         </div>
-    <div class="gallery" id="gallery"></div></div>
+    <div class="gallery__content"></div></div>
   </div>
 </body>
 </html>

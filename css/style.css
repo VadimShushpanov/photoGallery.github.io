@@ -1,4 +1,4 @@
-body {
+.page {
   background: #ededed;
 }
 
@@ -14,7 +14,7 @@ body {
   font: 400 13.3333px Arial;
 }
 
-.example-links {
+.gallery__links {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -28,12 +28,12 @@ body {
   margin-bottom: 5px;
 }
 
-.content {
+.gallery {
   max-width: 860px;
   margin: 0 auto;
 }
 
-.gallery {
+.gallery__content {
   max-width: 860px;
   min-width: 320px;
   min-height: 60vh;

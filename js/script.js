@@ -119,7 +119,7 @@ function jsonParse(result){
 function uploadImages() {
   let url  =  $('.loader-images__input').val();
   let uploadFile =  $('.loader-images__input-file').val();
-  let inputField =  document.getElementById("input");
+  let inputField =  document.getElementsByClassName("loader-images__input-file")[0];
 
   if (url.trim() === '' && uploadFile === ''){
     alert("Выберете файл или введите url до файла");
@@ -158,11 +158,11 @@ function addImgs(){
     photo.src = img.url;
     photo.style.width =  img.width + "px" ;
     photo.style.height = img.height  + "px";
-    $('.gallery').append(photo); 
+    $('.gallery__content').append(photo); 
 
   });  
   $('.loader-images__input').val('');
-  sizeImages($('.gallery').width() - getIndentForDevice ());
+  sizeImages($('.gallery__content').width() - getIndentForDevice ());
 }
 
 function sizeImages(widthGallery ) {
@@ -218,13 +218,13 @@ function sizeImages(widthGallery ) {
 
 
 window.onresize = function(e){
-    $('.gallery').css({"width": document.documentElement.clientWidth -25 });
-    sizeImages($('.gallery').width() - getIndentForDevice ());  
+    $('.gallery__content').css({"width": document.documentElement.clientWidth -25 });
+    sizeImages($('.gallery__content').width() - getIndentForDevice());  
 }
 
 $(document).ready(function () {
   let observer = new MutationObserver(function(mutations) {
-    sizeImages($('.gallery').width() - getIndentForDevice ());
+    sizeImages($('.gallery__content').width() - getIndentForDevice ());
   });
   
   let child = document.querySelector('.gallery');
