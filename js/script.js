@@ -40,12 +40,12 @@ function isJson(url) {
 
 function loadImgLink (url) {
   let image = new Image();
-  image.classList.add('gallery__img-'+ $('.gallery img').length);
+  image.classList.add('gallery__img-'+ $('.gallery__content img').length);
   image.src = url;
   image.onload = function() {
     this.width  = this.width * 200/ this.height;
     this.height= 200;
-    images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
+    images[$('.gallery__content img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
     clearGallery();
     addImgs();
   }
@@ -74,12 +74,12 @@ function buttonLoadImg (inputField) {
     $(reader).load(function(e) { 
         let url =e.target.result;
         let image = new Image();
-        image.classList.add('gallery__img-'+ $('.gallery img').length);
+        image.classList.add('gallery__img-'+ $('.gallery__content img').length);
         image.src = e.target.result;
         image.onload = function() {
           this.width  = this.width * 200/ this.height;
           this.height= 200;
-          images[$('.gallery img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
+          images[$('.gallery__content img').length]= Object.assign({},  {"url": url , "width" :  this.width, "height" : this.height });
           clearGallery();
           addImgs();
         }
@@ -110,7 +110,7 @@ function jsonParse(result){
       Object.entries(value).forEach(([key, value]) => {
         value.width  = value.width * 200/  value.height;
         value.height = 200;
-        images[$('.gallery img').length + Number(key)]= Object.assign({}, value);
+        images[$('.gallery__content img').length + Number(key)]= Object.assign({}, value);
       });                 
     }
   );
@@ -227,7 +227,7 @@ $(document).ready(function () {
     sizeImages($('.gallery__content').width() - getIndentForDevice ());
   });
   
-  let child = document.querySelector('.gallery');
+  let child = document.querySelector('.gallery__content');
   observer.observe(child, { attributes: true });
  });
 
@@ -249,5 +249,5 @@ function removeUploadedFile() {
 function clearGallery(clearImages) {
   if(clearImages === 'Y')
     images={};
-  $('.gallery img').remove();
+  $('.gallery__content img').remove();
 }
